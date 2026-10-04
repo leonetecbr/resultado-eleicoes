@@ -44,7 +44,7 @@ export function ResultCandidate({ data, loading }) {
         return candidates.filter(c => [c.nm, c.nmu, c.n, c.par].some(field => normalize(field).includes(q)));
     }, [candidates, search]);
 
-    if (searched.length === 0) {
+    if (!loading && searched.length === 0) {
         return (
             <Alert severity="warning">
                 Nenhum candidato encontrado para a busca &ldquo;{search}&rdquo;. Tente pesquisar pelo nome, número
