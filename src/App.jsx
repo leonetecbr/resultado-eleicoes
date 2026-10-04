@@ -217,7 +217,7 @@ function App() {
                     <TabPanel value={ROUNDS.FIRST} className="p-1">
                         <TabContext value={position}>
                             <Box className="border-b border-gray-300">
-                                <TabList onChange={handleChangePosition} aria-label="Cargos da eleição">
+                                <TabList variant="scrollable" scrollButtons allowScrollButtonsMobile onChange={handleChangePosition} aria-label="Cargos da eleição">
                                     <Tab
                                         value={POSITIONS.PRESIDENT}
                                         onClick={() => handleClickPosition(POSITIONS.PRESIDENT)}
