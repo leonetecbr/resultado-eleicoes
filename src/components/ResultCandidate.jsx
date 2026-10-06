@@ -1,10 +1,22 @@
-import { useApp } from '../hooks/index.js';
+import { useApp } from '../hooks';
+import { useMemo, Fragment } from 'react';
 import { Alert, Avatar, Box, Chip, Divider, LinearProgress, Skeleton, Typography } from '@mui/material';
-import { useMemo } from 'react';
 
 const votes = cand => Number(cand?.vap) || 0;
 
 const isElected = cand => (cand?.e === 's' ? 1 : 0);
+
+const bgCandColors = {
+    'Eleito': 'bg-green-300 ',
+    '2º turno': 'bg-blue-300 ',
+    'Não eleito': 'bg-red-300 ',
+}
+
+const textCandColors = {
+    'Eleito': 'success',
+    '2º turno': 'info',
+    'Não eleito': 'error',
+}
 
 const normalize = (s = '') =>
     String(s)
@@ -54,103 +66,89 @@ export function ResultCandidate({ data, loading }) {
     }
 
     return searched.map((cand, index) => {
-        let color;
-
-        if (!loading) {
-            switch (cand.st) {
-                case 'Não eleito':
-                    color = 'red';
-                    break;
-
-                case 'Eleito':
-                    color = 'green';
-                    break;
-
-                case '2º turno':
-                    color = 'yellow';
-                    break;
-
-                default:
-                    color = 'secondary';
-            }
-        }
-
         if (typeof cand.pvap === 'string') cand.pvap = parseFloat(cand.pvap.replace(',', '.'));
 
         return (
-            <Box key={loading ? index : cand.sqcand}>
-                <Box className="flex justify-between">
-                    <Box className="flex">
-                        {loading ? (
-                            <Skeleton variant="circular" width={56} height={64} />
-                        ) : (
-                            <Avatar
-                                alt={cand.nmu}
-                                className="h-16 w-14"
-                                src={`${getBaseUrl()}/fotos/${position === POSITIONS.PRESIDENT ? 'br' : uf}/${cand.sqcand}.jpeg`}
-                            />
-                        )}
-                        <Box className="ml-2 flex flex-col">
-                            <Box className="flex">
-                                {loading ? (
-                                    <>
-                                        <Skeleton width={150} height={24} className="mr-2" />
-                                        <Skeleton width={30} height={24} />
-                                    </>
-                                ) : (
-                                    <>
-                                        <Typography>{cand.nmu}</Typography>
-                                        <Divider orientation="vertical" className="mx-2" />
-                                        <Typography color="text.secondary" className="font-light">
-                                            {cand.par}
-                                        </Typography>
-                                    </>
-                                )}
-                            </Box>
-                            <Box className="flex items-center">
-                                {loading ? (
-                                    <>
-                                        <Skeleton width={39} height={32} className="mr-2" />
-                                        <Skeleton width={59} height={24} />
-                                    </>
-                                ) : (
-                                    <>
-                                        <Chip label={cand.n} variant="outlined" className="mr-2" />
-                                        <Typography color={color}>{cand.st}</Typography>
-                                    </>
-                                )}
-                            </Box>
-                        </Box>
-                    </Box>
-                    <Box className="flex items-end">
-                        <Box sx={{ minWidth: 35 }}>
+            <Fragment key={loading ? index : cand.sqcand}>
+                <Box className={`${!loading ? bgCandColors[cand?.st] ?? '' : ''}p-3 rounded my-3`}>
+                    <Box className="flex justify-between">
+                        <Box className="flex">
                             {loading ? (
-                                <Skeleton width={46} height={20} />
+                                <Skeleton variant="circular" width={56} height={64} />
                             ) : (
-                                <Typography variant="body2" color="text.secondary">
-                                    {cand.pvap.toLocaleString('pt-br', { minimumFractionDigits: 2 })}%
-                                </Typography>
+                                <Avatar
+                                    alt={cand.nmu}
+                                    className="h-16 w-14"
+                                    src={`${getBaseUrl()}/fotos/${position === POSITIONS.PRESIDENT ? 'br' : uf}/${cand.sqcand}.jpeg`}
+                                />
                             )}
+                            <Box className="ml-2 flex flex-col">
+                                <Box className="flex">
+                                    {loading ? (
+                                        <>
+                                            <Skeleton width={150} height={24} className="mr-2" />
+                                            <Skeleton width={30} height={24} />
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Typography>{cand.nmu}</Typography>
+                                            <Divider orientation="vertical" className="mx-2" />
+                                            <Typography color="text.secondary" className="font-light">
+                                                {cand.par}
+                                            </Typography>
+                                        </>
+                                    )}
+                                </Box>
+                                <Box className="flex items-center">
+                                    {loading ? (
+                                        <>
+                                            <Skeleton width={39} height={32} className="mr-2" />
+                                            <Skeleton width={59} height={24} />
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Chip label={cand.n} variant="outlined" className="mr-2" />
+                                            <Typography color={textCandColors[cand.st] ?? ''} className="font-bold">{cand.st}</Typography>
+                                        </>
+                                    )}
+                                </Box>
+                            </Box>
+                        </Box>
+                        <Box className="flex items-end">
+                            <Box sx={{ minWidth: 35 }}>
+                                {loading ? (
+                                    <Skeleton width={46} height={20} />
+                                ) : (
+                                    <Typography variant="body2" color="text.secondary">
+                                        {cand.pvap.toLocaleString('pt-br', { minimumFractionDigits: 2 })}%
+                                    </Typography>
+                                )}
+                            </Box>
                         </Box>
                     </Box>
-                </Box>
-                <Box className="mt-3 w-full">
-                    {loading ? (
-                        <>
-                            <Skeleton width={110} height={20} />
-                            <Skeleton width="100%" height={4} />
-                        </>
-                    ) : (
-                        <>
-                            <Typography variant="body2" color="text.secondary">
-                                {parseInt(cand.vap).toLocaleString('pt-br')} votos
-                            </Typography>
-                            <LinearProgress variant="determinate" value={cand.pvap} />
-                        </>
-                    )}
+                    <Box className="mt-3 w-full">
+                        {loading ? (
+                            <>
+                                <Skeleton width={110} height={20} />
+                                <Skeleton width="100%" height={4} />
+                            </>
+                        ) : (
+                            <>
+                                <Typography variant="body2" color="text.secondary">
+                                    {parseInt(cand.vap).toLocaleString('pt-br')} votos
+                                    {
+                                        cand.dvt !== 'Válido' && (
+                                            <Chip label={cand.dvt} color="warning" size="small" className="ml-2 mb-1" />
+                                        )
+                                    }
+                                </Typography>
+                                <LinearProgress variant="determinate" value={cand.pvap} />
+                            </>
+                        )}
+                    </Box>
                 </Box>
                 <Divider className="my-4" />
-            </Box>
+            </Fragment>
         );
     });
 }

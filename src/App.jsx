@@ -12,12 +12,12 @@ const deputyPosition = uf => (uf === 'df' ? POSITIONS.DISTRICT : POSITIONS.STATE
 const isDeputy = position => position === POSITIONS.STATE || position === POSITIONS.DISTRICT;
 
 function App() {
-    const { uf, setUf, code, round, setRound, position, setPosition, getBaseUrl } = useApp();
     const [data, setData] = useState([]);
     const [error, setError] = useState(false);
-    const [showSelectUF, setShowSelectUF] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+    const [showSelectUF, setShowSelectUF] = useState(false);
+    const { uf, setUf, code, round, setRound, position, setPosition, setSearch, getBaseUrl } = useApp();
 
     const refreshingTimeoutID = useRef(null);
     const abortControllerRef = useRef(null);
@@ -45,9 +45,9 @@ function App() {
                 return res.json();
             })
             .then(result => {
-                setIsLoaded(true);
                 setError(false);
                 setData(result);
+                setIsLoaded(true);
 
                 clearTimeout(refreshingTimeoutID.current);
                 refreshingTimeoutID.current = setTimeout(() => setRefreshing(false), 1000);
@@ -56,8 +56,8 @@ function App() {
                 // Requisição cancelada por uma mais nova: não é um erro real
                 if (err.name === 'AbortError') return;
 
-                setIsLoaded(true);
                 setError(true);
+                setIsLoaded(true);
                 setRefreshing(false);
             });
     }, [canFetch, position, uf, getBaseUrl, code]);
@@ -123,6 +123,7 @@ function App() {
     }
 
     function handleChangePosition(event, newValue) {
+        setSearch('');
         setError(false);
         setIsLoaded(false);
         setShowSelectUF(false);

@@ -16,7 +16,7 @@ import { useApp } from '../hooks';
 import ResultCandidate from './ResultCandidate';
 import ErrorIcon from '@mui/icons-material/Error';
 import PeopleIcon from '@mui/icons-material/People';
-import PercentIcon from '@mui/icons-material/Percent';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import NoAccountsIcon from '@mui/icons-material/NoAccounts';
 
 export function Result({ data, loading, refreshing }) {
@@ -76,7 +76,7 @@ export function Result({ data, loading, refreshing }) {
                                 <Skeleton variant="circular" width={40} height={40} />
                             ) : (
                                 <Avatar>
-                                    <PercentIcon />
+                                    <GroupAddIcon />
                                 </Avatar>
                             )}
                         </ListItemAvatar>
@@ -87,9 +87,9 @@ export function Result({ data, loading, refreshing }) {
                             </Box>
                         ) : (
                             <ListItemText
-                                primary="Cada 1%"
+                                primary="Eleitorado não totalizado"
                                 secondary={
-                                    'São ' + parseInt(data.v.vv / 100).toLocaleString('pt-br') + ' votos válidos'
+                                    parseInt(data.e.esnt).toLocaleString('pt-br') + ' eleitores'
                                 }
                             />
                         )}
@@ -152,7 +152,7 @@ export function Result({ data, loading, refreshing }) {
                 value={search}
                 onChange={e => setSearch(e.target.value)}
             />
-            {!loading && data?.md !== 'n' && data?.cand?.[0]?.st === '' && (
+            {!loading && (data?.md === 's' || data?.md === 'e') && data?.tf === 'n' && (
                 <Alert severity="success" className="mb-4">
                     Eleição matematicamente definida: {data.md === 's' ? 'Segundo turno' : 'Candidato eleito'}
                 </Alert>
