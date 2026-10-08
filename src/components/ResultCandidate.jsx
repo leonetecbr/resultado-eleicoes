@@ -1,3 +1,5 @@
+// noinspection JSNonASCIINames
+
 import { useApp } from '../hooks';
 import { useMemo, Fragment } from 'react';
 import { Alert, Avatar, Box, Chip, Divider, LinearProgress, Skeleton, Typography } from '@mui/material';
@@ -8,14 +10,20 @@ const isElected = cand => (cand?.e === 's' ? 1 : 0);
 
 const bgCandColors = {
     'Eleito': 'bg-green-300 ',
+    'Eleito por QP': 'bg-green-300 ',
+    'Eleito por média': 'bg-green-200 ',
     '2º turno': 'bg-blue-300 ',
     'Não eleito': 'bg-red-300 ',
+    'Suplente': 'bg-yellow-300 ',
 }
 
 const textCandColors = {
     'Eleito': 'success',
+    'Eleito por QP': 'success ',
+    'Eleito por média': 'success ',
     '2º turno': 'info',
     'Não eleito': 'error',
+    'Suplente': 'warning',
 }
 
 const normalize = (s = '') =>
