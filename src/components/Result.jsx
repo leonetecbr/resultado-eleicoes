@@ -88,9 +88,7 @@ export function Result({ data, loading, refreshing }) {
                         ) : (
                             <ListItemText
                                 primary="Eleitorado não totalizado"
-                                secondary={
-                                    parseInt(data.e.esnt).toLocaleString('pt-br') + ' eleitores'
-                                }
+                                secondary={parseInt(data.e.esnt).toLocaleString('pt-br') + ' eleitores'}
                             />
                         )}
                     </ListItem>

@@ -2,6 +2,7 @@
 
 import { useApp } from '../hooks';
 import { useMemo, Fragment } from 'react';
+import { POSITIONS, ROUNDS } from '../dictonarys';
 import { Alert, Avatar, Box, Chip, Divider, LinearProgress, Skeleton, Typography } from '@mui/material';
 
 const votes = cand => Number(cand?.vap) || 0;
@@ -9,22 +10,22 @@ const votes = cand => Number(cand?.vap) || 0;
 const isElected = cand => (cand?.e === 's' ? 1 : 0);
 
 const bgCandColors = {
-    'Eleito': 'bg-green-300 ',
+    Eleito: 'bg-green-300 ',
     'Eleito por QP': 'bg-green-300 ',
     'Eleito por média': 'bg-green-200 ',
     '2º turno': 'bg-blue-300 ',
     'Não eleito': 'bg-red-300 ',
-    'Suplente': 'bg-yellow-300 ',
-}
+    Suplente: 'bg-yellow-300 ',
+};
 
 const textCandColors = {
-    'Eleito': 'success',
+    Eleito: 'success',
     'Eleito por QP': 'success ',
     'Eleito por média': 'success ',
     '2º turno': 'info',
     'Não eleito': 'error',
-    'Suplente': 'warning',
-}
+    Suplente: 'warning',
+};
 
 const normalize = (s = '') =>
     String(s)
@@ -45,7 +46,7 @@ function orderCandidates(dv, candidates) {
 }
 
 export function ResultCandidate({ data, loading }) {
-    const { uf, getBaseUrl, POSITIONS, position, ROUNDS, round, search } = useApp();
+    const { uf, getBaseUrl, position, round, search } = useApp();
 
     const candidates = useMemo(
         () =>
@@ -78,7 +79,7 @@ export function ResultCandidate({ data, loading }) {
 
         return (
             <Fragment key={loading ? index : cand.sqcand}>
-                <Box className={`${!loading ? bgCandColors[cand?.st] ?? '' : ''}p-3 rounded my-3`}>
+                <Box className={`${!loading ? (bgCandColors[cand?.st] ?? '') : ''}my-3 rounded p-3`}>
                     <Box className="flex justify-between">
                         <Box className="flex">
                             {loading ? (
@@ -116,7 +117,12 @@ export function ResultCandidate({ data, loading }) {
                                     ) : (
                                         <>
                                             <Chip label={cand.n} variant="outlined" className="mr-2" />
-                                            <Typography color={textCandColors[cand.st] ?? ''} className="font-bold">{cand.st}</Typography>
+                                            <Typography
+                                                color={textCandColors[cand.st] ?? ''}
+                                                className="font-bold"
+                                            >
+                                                {cand.st}
+                                            </Typography>
                                         </>
                                     )}
                                 </Box>
@@ -144,11 +150,14 @@ export function ResultCandidate({ data, loading }) {
                             <>
                                 <Typography variant="body2" color="text.secondary">
                                     {parseInt(cand.vap).toLocaleString('pt-br')} votos
-                                    {
-                                        cand.dvt !== 'Válido' && (
-                                            <Chip label={cand.dvt} color="warning" size="small" className="ml-2 mb-1" />
-                                        )
-                                    }
+                                    {Boolean(cand.dvt) && cand.dvt !== 'Válido' && (
+                                        <Chip
+                                            label={cand.dvt}
+                                            color="warning"
+                                            size="small"
+                                            className="mb-1 ml-2"
+                                        />
+                                    )}
                                 </Typography>
                                 <LinearProgress variant="determinate" value={cand.pvap} />
                             </>

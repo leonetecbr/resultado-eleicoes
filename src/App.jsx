@@ -5,19 +5,28 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import { POSITIONS, ROUNDS, UFs } from './dictonarys';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { isDeputy, deputyPosition, hasSecondRound } from './utils';
 import { Alert, Box, Button, Container, CssBaseline, Link, Tab } from '@mui/material';
 
-const hasSecondRound = uf => UFs.some(u => u.value === uf && u.second);
-const deputyPosition = uf => (uf === 'df' ? POSITIONS.DISTRICT : POSITIONS.STATE);
-const isDeputy = position => position === POSITIONS.STATE || position === POSITIONS.DISTRICT;
-
 function App() {
+    const {
+        uf,
+        setUf,
+        code,
+        round,
+        setRound,
+        position,
+        setPosition,
+        setSearch,
+        getBaseUrl,
+        isLoaded,
+        setIsLoaded,
+        showSelectUF,
+        setShowSelectUF,
+    } = useApp();
     const [data, setData] = useState([]);
     const [error, setError] = useState(false);
-    const [isLoaded, setIsLoaded] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
-    const [showSelectUF, setShowSelectUF] = useState(false);
-    const { uf, setUf, code, round, setRound, position, setPosition, setSearch, getBaseUrl } = useApp();
 
     const refreshingTimeoutID = useRef(null);
     const abortControllerRef = useRef(null);
@@ -163,22 +172,6 @@ function App() {
         }
     }
 
-    function handleChangeUf(newUf) {
-        if (newUf !== 'br') {
-            localStorage.setItem('uf', newUf);
-
-            if (isDeputy(position)) {
-                setPosition(deputyPosition(newUf));
-            }
-        }
-
-        // Só volta para o loading se a UF realmente mudou, senão nada refaz a busca
-        if (newUf !== uf) setIsLoaded(false);
-
-        setUf(newUf);
-        setShowSelectUF(false);
-    }
-
     const showResult = position === POSITIONS.PRESIDENT || uf !== 'br';
 
     let load = null;
@@ -212,13 +205,19 @@ function App() {
                     <Box className="border-b border-gray-300">
                         <TabList onChange={handleChangeRound} aria-label="Turnos da eleição">
                             <Tab label="1º Turno" value={ROUNDS.FIRST} />
-                            {/*<Tab label="2º Turno" value={ROUNDS.SECOND} />*/}
+                            <Tab label="2º Turno" value={ROUNDS.SECOND} />
                         </TabList>
                     </Box>
                     <TabPanel value={ROUNDS.FIRST} className="p-1">
                         <TabContext value={position}>
                             <Box className="border-b border-gray-300">
-                                <TabList variant="scrollable" scrollButtons allowScrollButtonsMobile onChange={handleChangePosition} aria-label="Cargos da eleição">
+                                <TabList
+                                    variant="scrollable"
+                                    scrollButtons
+                                    allowScrollButtonsMobile
+                                    onChange={handleChangePosition}
+                                    aria-label="Cargos da eleição"
+                                >
                                     <Tab
                                         value={POSITIONS.PRESIDENT}
                                         onClick={() => handleClickPosition(POSITIONS.PRESIDENT)}
@@ -247,7 +246,7 @@ function App() {
                                 </TabList>
                             </Box>
                             <TabPanel value={position} className="p-0 pt-2">
-                                <SelectUF uf={uf} setUf={handleChangeUf} show={showSelectUF} />
+                                <SelectUF />
                                 {load}
                             </TabPanel>
                         </TabContext>
@@ -269,7 +268,7 @@ function App() {
                                 </TabList>
                             </Box>
                             <TabPanel value={position} className="p-0 pt-2">
-                                <SelectUF uf={uf} setUf={handleChangeUf} turno={2} show={showSelectUF} />
+                                <SelectUF turno={2} />
                                 {load}
                             </TabPanel>
                         </TabContext>
@@ -278,7 +277,11 @@ function App() {
             </Container>
             {isLoaded && (
                 <Box component="footer" className="p-2 text-center">
-                    <Link href="https://github.com/leonetecbr/resultado-eleicoes" color="inherit" aria-label="GitHub">
+                    <Link
+                        href="https://github.com/leonetecbr/resultado-eleicoes"
+                        color="inherit"
+                        aria-label="GitHub"
+                    >
                         <GitHubIcon />
                     </Link>
                 </Box>

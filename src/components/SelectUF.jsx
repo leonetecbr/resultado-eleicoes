@@ -1,13 +1,17 @@
-import { UFs } from '../dictonarys';
+import { useApp } from '../hooks';
+import { POSITIONS, ROUNDS, UFs } from '../dictonarys';
 import { FormControl, FormHelperText, InputLabel, MenuItem, Select, Collapse, Box } from '@mui/material';
+import { hasSecondRound } from '../utils/index.js';
 
-export function SelectUF({ setUf, uf, show, turno = 1 }) {
+export function SelectUF() {
+    const { uf, handleChangeUf, showSelectUF, round, position } = useApp();
+
     const handleChange = event => {
-        setUf(event.target.value);
+        handleChangeUf(event.target.value);
     };
 
     return (
-        <Collapse in={show} className="text-center">
+        <Collapse in={showSelectUF} className="text-center">
             <Box className="mb-2 mt-3">
                 <FormControl>
                     <InputLabel id="ufResultLabel">UF</InputLabel>
@@ -20,7 +24,9 @@ export function SelectUF({ setUf, uf, show, turno = 1 }) {
                         labelId="ufResultLabel"
                     >
                         {UFs.map(({ label, value, second }) => {
-                            return turno === 1 || second ? (
+                            return round === ROUNDS.FIRST ||
+                                second ||
+                                (hasSecondRound('br') && position === POSITIONS.PRESIDENT) ? (
                                 <MenuItem value={value} key={value}>
                                     {label}
                                 </MenuItem>
